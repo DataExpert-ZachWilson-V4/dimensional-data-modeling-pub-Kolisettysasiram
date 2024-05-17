@@ -1,4 +1,4 @@
--- This query inserts data into the table sasiram410.actors_history_scd by comparing the data for the last year (1914) with the data for the current year (1915), identifying changes and updating accordingly.
+-- This query inserts data into the table sasiram410.actors_history_scd by comparing the data for the last year (1914) with the data for the current year (1915), identifying the changes and updating accordingly.
 INSERT INTO sasiram410.actors_history_scd (actor,actor_id,quality_class,is_active,start_date,end_date,current_year)
 -- CTE 'last_season_scd' selects the data from the last year (1914) from the target table.
 WITH
