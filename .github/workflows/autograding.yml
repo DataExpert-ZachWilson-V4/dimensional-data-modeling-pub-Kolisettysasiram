@@ -19,8 +19,9 @@ jobs:
     name: 'Check files changed'
     runs-on: ubuntu-latest
     outputs:
-      submission_changes: ${{ steps.filtered-changed-files.outputs.any_changed }}
-      changed_files: ${{ steps.filtered-changed-files-list.outputs.changed_files }}
+      all_changed_submission_files: ${{ steps.filtered-changed-files.outputs.all_changed_submission_files }}
+      any_submission_changes: ${{ steps.filtered-changed-files.outputs.any_submission_changes }}
+      changed_submission_files_push: ${{ steps.filtered-changed-files.outputs.changed_submission_files_push }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,54 +31,54 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }}
           fetch-depth: 0
 
-      - name: Get all changed files
+      - name: Get all changed files in the submission folder
         id: tj-actions-changed-files
         uses: tj-actions/changed-files@v44
+        with:
+          files: submission/**
+          files_ignore: |
+            .github/**/*
+            _app/**
+            Dockerfile
       
-      - name: Get submission file changes in a single push
+      - name: Get changed submission files in PR and current push
         id: filtered-changed-files
         run: |
-          files_changed_pr="${{ steps.tj-actions-changed-files.outputs.all_changed_files }}"
-          echo "Files changed in PR: $files_changed_pr"
-          echo ''
+          all_changed_submission_files="${{ steps.tj-actions-changed-files.outputs.all_changed_files }}"
+          echo "List of submission files changed in PR: '$all_changed_submission_files'"
+          echo "all_changed_submission_files=$all_changed_submission_files" >> $GITHUB_OUTPUT
+          
+          any_submission_changes=$(if [ -n "$all_changed_submission_files" ]; then echo 'true'; else echo 'false'; fi)
+          echo "Any changes: $any_submission_changes"
+          echo "any_submission_changes=$any_submission_changes" >> $GITHUB_OUTPUT
 
-          files_changed_push="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})"
-          for file in $files_changed_push; do
-            if [[ " $files_changed_pr " =~ " $file " ]]; then
-              echo "Found changes in $file"
-              if [[ $file == submission/* ]]; then
-                echo "Adding '$file' to filtered list"
-                files_changed_push_filtered+=( "$file" )
-              fi
+          changed_files_push="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})"
+          for file in $changed_files_push; do
+            if [[ " $all_changed_submission_files " =~ " $file " ]]; then
+              echo "Valid changes in $file"
+              filter_changed_files_push+=( "$file" )
             fi
           done
-          echo ''
 
-          all_changed_files=$(echo "${files_changed_push_filtered[@]}" | xargs)
-          echo "Filtered list of files changed: '$all_changed_files'"
-
-          any_changed=$(if [ -n "$all_changed_files" ]; then echo 'true'; else echo 'false'; fi)
-          echo "Any changed: $any_changed"
+          changed_submission_files_push=$(echo "${filter_changed_files_push[@]}" | xargs)
+          echo "Filtered list of files changed in push: '$changed_submission_files_push'"
+          echo "changed_submission_files_push=${changed_submission_files_push// /,}" >> $GITHUB_OUTPUT
           
-          echo "::set-output name=all_changed_files::$all_changed_files"
-          echo "::set-output name=any_changed::$any_changed"
-
-      # Set output indicating whether any submission files have changed
-      - name: Run step only if any submission file(s) changed
-        id: filtered-changed-files-list
-        if: steps.filtered-changed-files.outputs.any_changed == 'true'
+      - name: Run step only if any submission file(s) changed in PR
+        if: steps.filtered-changed-files.outputs.any_submission_changes == 'true'
         env:
-          ALL_CHANGED_FILES: ${{ steps.filtered-changed-files.outputs.all_changed_files }}
+          ALL_CHANGED_FILES: ${{ steps.filtered-changed-files.outputs.all_changed_submission_files }}
+          PUSHED_CHANGED_FILES: ${{ steps.filtered-changed-files.outputs.changed_submission_files_push }}
         run: |
           echo "One or more files in the submission folder has changed."
-          echo "Files changed: ${ALL_CHANGED_FILES// /,}"
-          echo "::set-output name=changed_files::${ALL_CHANGED_FILES// /,}"
+          echo "Files changed in PR: '${ALL_CHANGED_FILES// /,}'"
+          echo "Files changed in push: '${PUSHED_CHANGED_FILES// /,}'"
 
   configure_environment:
     name: 'Configure environment'
     runs-on: ubuntu-latest
     needs: [check_files]
-    if: needs.check_files.outputs.submission_changes == 'true'
+    if: needs.check_files.outputs.any_submission_changes == 'true'
     outputs:
       assignment: ${{ steps.get_variables.outputs.assignment_name }}
       assignment_schema: ${{ steps.get_variables.outputs.schema_name }}
@@ -93,19 +94,19 @@ jobs:
         run: |
           assignment="dimensional-data-modeling" # $(basename "${{ github.event.repository.full_name }}")
           echo "Assignment: $assignment"
-          echo "::set-output name=assignment_name::$assignment"
+          echo "assignment_name=$assignment" >> $GITHUB_OUTPUT
           schema="$(echo "$(basename "${{ github.repository }}")" | tr '-' '_')_${{github.event.number}}_test"
           echo "Test Schema: $schema"
-          echo "::set-output name=schema_name::$schema"
+          echo "schema_name=$schema" >> $GITHUB_OUTPUT
 
   deploy_application:
     name: 'Deploy application'
     runs-on: ubuntu-latest
     needs: [check_files, configure_environment]
-    if: needs.check_files.outputs.submission_changes == 'true'
+    if: needs.check_files.outputs.any_submission_changes == 'true'
     env:
       SUBMISSION_DIR: 'submission'
-      CHANGED_FILES: ${{ needs.check_files.outputs.changed_files }}
+      CHANGED_FILES: ${{ needs.check_files.outputs.changed_submission_files_push }}
       ASSIGNMENT: ${{ needs.configure_environment.outputs.assignment }}
       ASSIGNMENT_SCHEMA: ${{ needs.configure_environment.outputs.assignment_schema }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
