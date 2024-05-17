@@ -4,7 +4,7 @@ CREATE OR REPLACE TABLE sasiram410.actors (
     films ARRAY( -- Array of films the actor has participated in
         ROW(
             film VARCHAR, -- Name of the film
-            votes INTEGER, -- Number of votes the film received
+            votes INTEGER, -- Number of votes the film has received
             rating DOUBLE, -- Rating of the film
             film_id VARCHAR -- Unique identifier for each film
         )
