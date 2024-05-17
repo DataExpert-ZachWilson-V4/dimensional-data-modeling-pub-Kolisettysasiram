@@ -34,26 +34,30 @@ jobs:
         id: tj-actions-changed-files
         uses: tj-actions/changed-files@v44
       
-      - name: Get submission file changes from the current commit
+      - name: Get submission file changes in a single push
         id: filtered-changed-files
         run: |
           files_changed_pr="${{ steps.tj-actions-changed-files.outputs.all_changed_files }}"
           echo "Files changed in PR: $files_changed_pr"
+          echo ''
 
-          files_changed_commit=$(git diff --name-only HEAD HEAD~1)
-          echo "Files changed in commit: $files_changed_commit"
-
-          # Check if files from the commit are in the PR changes
-          for file in $files_changed_commit; do
+          files_changed_push="$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})"
+          for file in $files_changed_push; do
             if [[ " $files_changed_pr " =~ " $file " ]]; then
-              files_changed_commit_filtered+=( "$file" )
+              echo "Found changes in $file"
+              if [[ $file == submission/* ]]; then
+                echo "Adding '$file' to filtered list"
+                files_changed_push_filtered+=( "$file" )
+              fi
             fi
           done
-          
-          all_changed_files=$(echo "${files_changed_commit_filtered[@]}" | grep '^submission/' | xargs)
+          echo ''
+
+          all_changed_files=$(echo "${files_changed_push_filtered[@]}" | xargs)
+          echo "Filtered list of files changed: '$all_changed_files'"
+
           any_changed=$(if [ -n "$all_changed_files" ]; then echo 'true'; else echo 'false'; fi)
-          
-          for file in ${all_changed_files}; do echo "$file was changed"; done
+          echo "Any changed: $any_changed"
           
           echo "::set-output name=all_changed_files::$all_changed_files"
           echo "::set-output name=any_changed::$any_changed"

@@ -13,30 +13,21 @@ done
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 
-echo "Executing SQL queries for changed files: $CHANGED_FILES..."
+echo "Executing SQL queries..."
 
-# Loop through the changed files and run tests/comment generation
-for file in $CHANGED_FILES; do
-  # Run tests/comment generation for each changed file
-  if [[ $file == *.sql ]]; then
-    echo "Processing SQL file: $file"
-    RETURN_VALUE=$(exec python src/trino_tests.py $file)
+RETURN_VALUE=$(exec python src/trino_tests.py)
 
-    last_line=$(echo $RETURN_VALUE | tail -n 1)
-    if [[ "$last_line" = 'All tests passed successfully' ]]; then
-      echo "Tests for $file passed! Generating feedback..."
-      exec python src/generate_comment.py $file
-      echo "Done processing $file!"
-    else
-      echo "---------------------------------------------------------------------------------"
-      echo "------------------------------- ❌ TESTS FAILED ❌ -------------------------------"
-      echo "$RETURN_VALUE"
-      echo "----------------------------------------------------------------------------------"
-      echo "----------------------------------------------------------------------------------"
-      echo "Please update your submission for $file and try again."
-      exit 1
-    fi
-  else
-    echo "Skipping non-SQL file: $file"
-  fi
-done
+last_line=$(echo $RETURN_VALUE | tail -n 1)
+if [[ "$last_line" = 'All tests passed successfully' ]]; then
+  echo "Tests passed! Great work! Generating feedback for changed files: $CHANGED_FILES..."
+  exec python src/generate_comment.py
+  echo "Done!"
+else
+  echo "---------------------------------------------------------------------------------"
+  echo "------------------------------- ❌ TESTS FAILED ❌ -------------------------------"
+  echo "$RETURN_VALUE"
+  echo "----------------------------------------------------------------------------------"
+  echo "----------------------------------------------------------------------------------"
+  echo "Please update your submission and try again."
+  exit 1
+fi

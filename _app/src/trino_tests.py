@@ -1,5 +1,5 @@
 import os
-from util import get_logger, get_submissions, get_submission_dir, get_trino_creds, get_runtime_env, get_changed_files
+from util import get_logger, get_submissions, get_submission_dir, get_trino_creds, get_runtime_env
 from trino.dbapi import connect
 from trino.auth import BasicAuthentication
 
@@ -10,9 +10,9 @@ trino_host, trino_port, trino_username, trino_password, trino_catalog, trino_sch
 
 
 assignment_schema = os.environ.get('ASSIGNMENT_SCHEMA')
-create_sql = f"CREATE SCHEMA IF NOT EXISTS {assignment_schema}"
+drop_sql = f"DROP SCHEMA {assignment_schema} CASCADE"
+create_sql = f"CREATE SCHEMA {assignment_schema}"
 use_sql = f"USE {assignment_schema}"
-
 
 
 def init_trino():
@@ -26,6 +26,7 @@ def init_trino():
         auth=BasicAuthentication(trino_username, trino_password),
     )
     cur = conn.cursor()
+    cur.execute(drop_sql)
     cur.execute(create_sql)
     return True, 'Success'
   except Exception as e:
@@ -61,13 +62,11 @@ def run_tests(filename, submission):
   return passed, results
 
 
-def main(submissions: dict, files_to_process: list):
+def main(submissions: dict):
   if not submissions:
     logger.info('WARNING: No submissions found')
     return None
-  if not files_to_process:
-    logger.info('WARNING: No files specified for processing')
-    return None
+
   
   initalized, results = init_trino()
   if not initalized:
@@ -76,13 +75,11 @@ def main(submissions: dict, files_to_process: list):
   valid_submissions = {}
   comments = []
   for filename, submission in submissions.items():
-    file_path = os.path.join(submission_dir, filename)
-    if file_path in files_to_process:
-      passed, comment = run_tests(filename, submission)
-      if not passed:
-          comments.append(comment)
-      else:
-        valid_submissions[filename] = submission
+    passed, comment = run_tests(filename, submission)
+    if not passed:
+        comments.append(comment)
+    else:
+      valid_submissions[filename] = submission
   
   if comments:
     formatted_text = '\n'.join(comments)
@@ -93,6 +90,5 @@ def main(submissions: dict, files_to_process: list):
 
 if __name__ == "__main__":
   submissions = get_submissions(submission_dir)
-  files_to_process = get_changed_files()
-  passed, comment = main(submissions, files_to_process)
+  passed, comment = main(submissions)
   print(comment)
