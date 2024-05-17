@@ -36,7 +36,7 @@ current_year_data_agg AS (
             WHEN AVG(rating) > 6 AND AVG(rating) <= 7 THEN 'average'
             ELSE 'bad'
         END AS quality_class,
-        COUNT(*) > 0 AS is_active -- To find out whether actor is active or not we can count the number of movies he acted on that year
+        COUNT(*) > 0 AS is_active -- To find out whether an actor is active or not by counting the number of movies he acted on that year
         FROM current_year_data 
         GROUP BY 
         actor_id, actor,year
