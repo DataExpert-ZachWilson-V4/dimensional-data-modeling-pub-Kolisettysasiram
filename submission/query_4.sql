@@ -1,6 +1,6 @@
 -- Note : The main reason why I am only running historical loads up to 1914 is that the bootcamp.actor_films table contains data from the year 1914 to 2021. Since I loaded the cumulative table only up to 1914 in query2, I am performing historical loads up to the same year. To perform historical loads for all years, I would need to run query2 for each year individually. To make it simple and generic, I build cumulative table for 1914 then I am doing historical load till 1914.
 -- This query inserts data into the table sasiram410.actors_history_scd, applying slowly changing dimension (SCD) logic to track changes over the time.
-INSERT INTO sasiram410.actors_history_scd (actor, actor_id, quality_class, is_active, start_date, end_date, current_year)
+INSERT INTO sasiram410.actors_history_scd (actor,actor_id,quality_class,is_active,start_date,end_date,current_year)
 -- CTE 'lagged' calculates lagged values for is_active and quality_class columns to compare changes over time.
 WITH
   lagged AS (
@@ -57,8 +57,8 @@ SELECT
   actor_id,
   MAX(quality_class) AS quality_class,
   MAX(is_active) = 1 AS is_active,
-  MIN(current_year) AS start_date,
-  MAX(current_year) AS end_date,
+  DATE(CONCAT(CAST(MIN(current_year) AS VARCHAR), '-01-01')) AS start_date,
+  DATE(CONCAT(CAST(MAX(current_year) AS VARCHAR), '-12-31')) AS end_date,
   1914 AS current_year
 FROM
   streaked
