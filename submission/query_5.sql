@@ -4,7 +4,7 @@ INSERT INTO sasiram410.actors_history_scd (actor,actor_id,quality_class,is_activ
 WITH
   last_season_scd AS (
     SELECT
-      *
+      actor,actor_id,quality_class,is_active,year(start_date) as start_date ,year(end_date) as end_date ,current_year
     FROM
       sasiram410.actors_history_scd
     WHERE
@@ -110,8 +110,8 @@ SELECT
   actor_id,
   arr.quality_class,
   arr.is_active,
-  arr.start_date,
-  arr.end_date,
+  DATE(CONCAT(CAST(arr.start_date AS VARCHAR), '-01-01')) AS start_date,
+DATE(CONCAT(CAST(arr.end_date AS VARCHAR), '-12-31')) AS end_date,
   current_year
 FROM
   changes
