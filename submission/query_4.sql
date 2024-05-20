@@ -57,6 +57,7 @@ SELECT
   actor_id,
   MAX(quality_class) AS quality_class,
   MAX(is_active) = 1 AS is_active,
+  -- Here I took some liberity and coverted the year into date since in the query it is asked to find the change from which start_date to end_date so I consider them as DATE type
   DATE(CONCAT(CAST(MIN(current_year) AS VARCHAR), '-01-01')) AS start_date,
   DATE(CONCAT(CAST(MAX(current_year) AS VARCHAR), '-12-31')) AS end_date,
   1914 AS current_year
