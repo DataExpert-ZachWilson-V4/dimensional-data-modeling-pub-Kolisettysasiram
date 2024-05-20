@@ -111,7 +111,7 @@ SELECT
   arr.quality_class,
   arr.is_active,
   DATE(CONCAT(CAST(arr.start_date AS VARCHAR), '-01-01')) AS start_date,
-DATE(CONCAT(CAST(arr.end_date AS VARCHAR), '-12-31')) AS end_date,
+  DATE(CONCAT(CAST(arr.end_date AS VARCHAR), '-12-31')) AS end_date,
   current_year
 FROM
   changes
