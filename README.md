@@ -3,57 +3,55 @@
 
 ## Submission Guidelines
 
-Due to our use of GitHub Classroom automation, we cannot accommodate individual requests for changes, so please read through all instructions carefully.
+To ensure smooth processing of your submissions through GitHub Classroom automation, we cannot accommodate individual requests for changes. Therefore, please read all instructions carefully.
 
-1. **Complete assignment prompts:** Write your SQL in the query file corresponding to the prompt number in the **`submission`** folder. Do not change the file names!
-    >
-    > :warning: Please note that the `_app` folder, `Dockerfile`, and `.github` folder are essential components that facilitate automatic tests and feedback generation. 
-    > To ensure smooth operation of these processes, **please refrain from making any changes to these files/folders**. 
-    > Your focus should solely remain on editing files within the **`submission`** folder.
-    >
+1. **Sync fork:** Ensure your fork is up-to-date with the upstream repository. You can do this through the GitHub UI or by running the following commands in your local forked repository:
 
-2. **Lint your SQL code for readability.** This ensures your code is easy to follow and understand.
+    ```bash
+    git pull upstream main --rebase
+    git push origin <main/your_homework_repo> -f
+    ```
 
-3. **Add comments to your queries.** Use the **`--`** syntax to explain each step and help the reviewer understand your thought process. 
-
-4. **Submit your work:**
-    - Open a Pull Request (PR) to merge changes from your **`homework`** branch in your forked repository into the **`main`** branch in the upstream/base repository. In other words:
-      - The base repository should be **`DataExpert-ZachWilson-V4/dimensional-data-modeling:main`**
-      - The head repository should be **`DataExpert-ZachWilson-V4/dimensional-data-modeling-<your_github_username>:<your_homework_branch>`**
-    - This action will trigger the GitHub workflow, assuming you've opened the PR in the upstream repository correctly. Please ensure that you are submitting your work to the correct branch and repository, as opening a PR in the wrong location could lead to complications in the review process.
+3. **Open a PR in the upstream repository to submit your work:**
+    - Open a Pull Request (PR) to merge changes from your `main` or custom `homework` branch in your forked repository into the main branch in the upstream repository, i.e., the repository your fork was created from.
+    - Ensure your PR is opened correctly to trigger the GitHub workflow. Submitting to the wrong branch or repository will cause the GitHub action to fail.
     - See the [Steps to open a PR](#steps-to-open-a-pr) section below if you need help with this.
 
-  5. A link to your PR will be automatically shared with our TA team for review. They will begin reviewing everyone's PRs and submitting grades after the homework deadline.
+5. **Complete assignment prompts:** Write your SQL in the query file corresponding to the prompt number in the **`submission`** folder. Do not change or rename these files!
+    >
+    > :warning: The `_app` folder, `Dockerfile`, and `.github` folder are crucial for automated tests and feedback.
+Do not modify these files/folders. Focus only on the files within the submission folder.
+    >
+
+6. **Lint your SQL code for readability.** Ensure your code is clean and easy to follow.
+
+7. **Add comments to your queries.** Use the **`--`** syntax to explain each step and help the reviewer understand your thought process. 
+
+A link to your PR will be automatically shared with our TA team. They will review and grade submissions after the homework deadline.
 
 ### Steps to open a PR
-  1. Go to the upstream [**`dimensional-data-modeling`**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling) repository
-  2. Click the [**Pull Requests**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling/pulls) tab
-  3. Click the **"New pull request"** button on the top-right. Now you should be on the [**"Compare changes"**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling/compare) page
-  4. Click where it says **"compare across forks"**
-  5. Leave the base repository as is. For the **"head repository"**, select your forked repository and then the name of the branch you want to compare:
+  1. Go to the upstream [**`dimensional-data-modeling-pub`**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling-pub) repository
+  2. Click the [**Pull Requests**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling-pub/pulls) tab.
+  3. Click the **"New pull request"** button on the top-right. This will take you to the [**"Compare changes"**](https://github.com/DataExpert-ZachWilson-V4/dimensional-data-modeling-pub/compare) page.
+  4. Click the **"compare across forks"** link in the text.
+  5. Leave the base repository as is. For the **"head repository"**, select your forked repository and then the name of the branch you want to compare from your forked repo:
      - <img src="compare_changes_screenshot.png" alt="screenshot of compare changes page in GitHub" width="600">
   6. Click the **"Create pull request"** button to open the PR
 
+**:warning: :exclamation: IMPORTANT CONSIDERATIONS & REMINDERS :exclamation: :warning:**
+  - Do not close or merge your PR, as this will affect the codebase for others and make it difficult for TAs to find your submission.
+  - You can revise and push changes to the PR before the deadline, but avoid making changes after the deadline, as they will not be reviewed and may cause confusion.
+  - Some assignments include tests or feedback generated by GitHub Actions, which you can use to refine your solutions before the deadline.
+  - Enhance your review by adding comments under 'Files changed' to summarize or highlight key parts of your code. If you've already added comments within your code, you can reiterate or summarize those comments here.
+
 ### Grading
   - Grades are pass or fail, used solely for certification.
-  - Changes made after the deadline won't be considered. 
+  - Final grades will be submitted by a TA **after the deadline**.
   - An approved PR means a Pass grade. If changes are requested, the grade will be marked as Fail.
-  - The reviewer may provide comments or suggestions when they request changes, but they're optional and won't be reviewed.
-  - Only one (human) review will be provided for grading after the deadline.
-
-**:warning: :exclamation: IMPORTANT CONSIDERATIONS & REMINDERS :exclamation: :warning:**
-  - Your final submission must be on one branch. 
-  - You can revise and push changes to the PR any time before the deadline.
-  - Some assignments may include tests or feedback generated by the GitHub Action, which you may use to revise your solutions before the deadline.
-  - Only open one PR in the **`main`** branch of the upstream repo for your submission. The first PR you open will be considered your final submission.
-  - Enhance your review by helping your reviewer. Add comments under 'Files changed' to summarize or highlight key parts of your code. If you've already added comments throughout your code as recommended, then you can simply reiterate or summarize those comments in this section.
-  - Avoid further changes after the deadline. They won't be reviewed, and committing changes after the deadline can cause confusion and delay the review process.
+  - Reviewers may provide comments or suggestions with requested changes. These are optional and intended for your benefit. Any changes you make in response will not be re-reviewed.
 
 Assignment
 ==================
-
-ℹ️ **PLEASE NOTE**: You should **not** include any schema names in your SQL queries for this assignment.
-
 
 ## Dataset Overview
 
